@@ -82,12 +82,19 @@ const Header = styled.header`
     left:0;
     right:0;
     min-height: 50px;
-    padding: 0 20px;
+    padding: 20px 0px;
     transition: all .3s cubic-bezier(0.68, -0.6, 0.32, 1.6); 
     &.active{
         background: black !important;
-        padding: 0 10px;
+        padding: 10px 0;
     }
+    #sticky-navbar-brand-image{
+        transition: all .3s cubic-bezier(0.68, -0.6, 0.32, 1.6); 
+    }
+    &.active #sticky-navbar-brand-image{
+        width: 100px
+    }
+
 `
 
 Index.propTypes = {
@@ -103,17 +110,12 @@ Index.propTypes = {
 }
 
 function processBrandImage(brandImage){
-    let img = new Image()
-    img.src = brandImage
-    let width = img.width
-    let height = img.height
+    let img = React.createElement('img', {
+        src: brandImage,
+        id: 'sticky-navbar-brand-image',
+        width: 60
+    })
     console.log(img)
-    if(width > height){
-        img.width = 30
-        return img
-    }
-    else{
-        img.width = 30
-        return img
-    }
+    return img
+    
 }
