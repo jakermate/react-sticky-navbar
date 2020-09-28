@@ -7,3 +7,9 @@
 ```js
 npm i react-sticky-navbar
 ```
+
+# Dependencies
+- proptypes
+- react
+- react-dom
+- styled-components
