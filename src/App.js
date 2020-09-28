@@ -1,11 +1,13 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-
+import Navbar from './navbar/index'
+import brand from './logo.png'
 function App() {
   return (
     <div className="App">
       <header className="App-header">
+      <Navbar locations={[]} brandIcon={brand}></Navbar>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
