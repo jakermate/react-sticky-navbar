@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"
 import proptypes from "prop-types"
 import styled from "styled-components"
+const throttle = require('lodash').throttle
 export default function Index(props) {
   const log = console.log
   // setup defaults if none provided
@@ -22,12 +23,13 @@ export default function Index(props) {
   const [windowHeight, setWindowHeight] = useState(0)
   // setup listeners
   useEffect(() => {
-    document.addEventListener("scroll", onscroll)
+    document.addEventListener("scroll", throttle(onscroll, 50))
     document.addEventListener("resize", resizeWindow)
     setMap(generateMap(params.locations))
     resizeWindow()
   }, []) // on mount
   function onscroll() {
+      console.log('Scroll call')
     let position = getScrollLocation()
     log(position)
     determineIfActive(position)
@@ -56,9 +58,11 @@ export default function Index(props) {
     }
     headerRef.current.classList.remove("active")
   }
+
+  // generate location map for id scroll positions on page
   function generateMap(locationArray){
-      let inValid = false
-      //error handling
+    let inValid = false
+    //error handling
     if(!locationArray){
         return
     }
@@ -82,6 +86,9 @@ export default function Index(props) {
     })
     return map
   }
+
+
+  // render
   return (
     <Header
       ref={headerRef}
