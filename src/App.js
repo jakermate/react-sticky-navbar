@@ -7,7 +7,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <Navbar locations={[]} brandIcon={brand}></Navbar>
+      <Navbar locations={[]} brandIcon={brand} backgroundColorSecondary={'blue'}></Navbar>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
