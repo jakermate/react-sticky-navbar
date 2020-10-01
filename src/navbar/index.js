@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react"
 import proptypes from "prop-types"
 import styled from "styled-components"
 import throttle from "lodash/throttle"
+import { parseAsync } from "@babel/core"
 export default function Index(props) {
   const log = console.log
   // setup defaults if none provided
@@ -10,20 +11,26 @@ export default function Index(props) {
     locations: props?.locations || null,
     brandIcon: processBrandImage(props?.brandIcon), // image element
     maxWidth: props?.maxWidth || 1024,
-    backgroundColorPrimary: props?.backgroundColorPrimary || "white",
-    backgroundColorSecondary: props?.backgroundColorSecondary || "black",
+    backgroundColorDocked: props?.backgroundColorDocked || "white",
+    backgroundColorActive: props?.backgroundColorActive || "black",
     dropShadow: props?.dropShadow || true,
     brandLink: props?.brandLink || "/",
+    textStylesActive: props?.textStylesActive || {},
+    textStylesDocked: props?.textStylesDocked || {},
   }
 
   // location tracking
-  const [active, setActive] = useState("/")
+  const [active, setActive] = useState(0)
   const [map, setMap] = useState({})
+  const mapRef = useRef(map)
+  mapRef.current = map
   const [windowHeight, setWindowHeight] = useState(0)
+  const windowHeightRef = useRef(windowHeight)
+  windowHeightRef.current = windowHeight
   // setup listeners
   useEffect(() => {
     // set scroll behavior to smooth
-    document.documentElement.style.scrollBehavior = 'smooth'
+    document.documentElement.style.scrollBehavior = "smooth"
     document.addEventListener("scroll", throttle(onscroll, 50))
     document.addEventListener("resize", resizeWindow)
     setMap(generateMap(params.locations))
@@ -37,13 +44,16 @@ export default function Index(props) {
     determineIfScrolled(position)
 
     // determine what section is being seen
-    if (Object.keys(map).length === 0) {
+    if (Object.keys(mapRef.current).length === 0) {
+      // log(map)
       return // return if map is default empty object
     }
-    log(map)
+    log(mapRef.current)
     let activePath = getActiveLocation()
     setActive((oldState) => activePath)
   }
+  
+
 
   function getScrollLocation() {
     return window.scrollY
@@ -51,8 +61,10 @@ export default function Index(props) {
 
   function getActiveLocation() {
     let active = 0
-    map.forEach((map, index) => {
-      if (window.scrollY + windowHeight / 2 > map.height) {
+    console.log('getting active location')
+    mapRef.current.forEach((mapObj, index) => {
+      // console.log(mapObj)
+      if (window.scrollY + windowHeightRef.current / 2 > mapObj.location) {
         active = index
         // console.log('can see '+path)
       }
@@ -126,13 +138,50 @@ export default function Index(props) {
         return f.id
       })
       .indexOf(idString)
-
+    // if home index selected
+    if (index === 0) {
+      window.scrollTo(0, 0)
+      return
+    }
+    // if non-home index selected
     window.scrollTo(0, parseInt(map[index].location) - windowHeight / 3)
   }
 
+
+  const [indicatorWidth, setIndicatorWidth] = useState(10)
+  const [indicatorOffset, setIndicatorOffset] = useState(10)
+  // callback for when active section changes
+  useEffect(()=>{
+    // do calculations for indicator size and position
+    console.log('new active: ' + active)
+    let leftOffset = document.getElementById(`${params.locations[active].id}-link`).offsetLeft
+    let width = document.getElementById(`${params.locations[active].id}-link`).offsetWidth
+    console.log('width: ' + width)
+    console.log('offset: '+ leftOffset)
+    setIndicatorWidth(width)
+    setIndicatorOffset(leftOffset)
+  },[active])
+  const indicatorComponent = (
+    <div
+      style={{
+        transition: "all .4s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+        borderRadius: "5px",
+        position: 'absolute',
+        bottom: 0,
+        background: "white",
+        height: '2px',
+        background: `black`,
+        width: `${indicatorWidth / 4}px`,
+        transform: `translateX(${indicatorOffset + (indicatorWidth / 4 + indicatorWidth / 8)}px`,
+      }}
+    ></div>
+  )
+
   //   navigator component
   const navComponent = (
-    <div>
+    <div style={{
+      position:'relative'
+    }}>
       <div
         id="sticky-navbar-nav-links"
         style={{
@@ -144,10 +193,14 @@ export default function Index(props) {
       >
         {params.locations.map((locationObj, index) => {
           return (
-            <button
+            <NavButton
               key={`sticky-navbar-link-key-${index}`}
-              className="sticky-navbar-location-button"
-              style={{}}
+              className="sticky-navbar-location-nav-button"
+              id={`${locationObj.id}-link`}
+              style={{
+                ...params.textStyleDocked,
+                fontSize: "1rem",
+              }}
               onClick={(e) => {
                 handleNavigation(e, locationObj.id)
               }}
@@ -155,17 +208,30 @@ export default function Index(props) {
               <div className="sticky-navbar-location-text">
                 {locationObj.text}
               </div>
-            </button>
+            </NavButton>
           )
         })}
       </div>
-      <div id="sticky-navbar-nav-indicator"></div>
+      <div
+        id="sticky-navbar-nav-indicator"
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: '2px'
+        }}
+      >
+        {indicatorComponent}
+      </div>
     </div>
   )
+  
 
   // render
   return (
     <Header
+      id="react-sticky-navbar"
       ref={headerRef}
       className=""
       style={{
@@ -174,11 +240,15 @@ export default function Index(props) {
         left: 0,
         right: 0,
         width: "100%",
-        background: params.backgroundColorPrimary,
+        background: params.backgroundColorDocked,
       }}
       // paramter drops
-      secondary={params.backgroundColorSecondary}
+      secondary={params.backgroundColorActive}
       dropShadow={params.dropShadow}
+      textStylesActive={{
+        ...params.textStyleActive,
+        color: "white",
+      }}
     >
       <div
         id="sticky-navbar-content-wrapper"
@@ -204,12 +274,10 @@ export default function Index(props) {
           >
             {params.brandIcon}
           </div>
-          
         </a>
         <div id="react-sticky-navbar-links-container">
-          {params.locations && navComponent} 
-
-          </div>
+          {params.locations && navComponent}
+        </div>
       </div>
     </Header>
   )
@@ -231,12 +299,25 @@ const Header = styled.header`
     box-shadow: ${(props) =>
       props.dropShadow ? "0 4px 8px rgba(0,0,0,.3)" : "none"};
   }
+  /* brand image active styling */
   #react-sticky-navbar-brand-container {
     transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);
   }
   &.active #react-sticky-navbar-brand-container {
     transform: scale(1.4);
   }
+  /* nav links active styling */
+  .sticky-navbar-location-nav-button {
+  }
+  &.active .sticky-navbar-location-nav-button {
+    color: ${(props) => props.textStylesActive.color};
+  }
+`
+const NavButton = styled.button`
+  padding: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
 `
 
 Index.propTypes = {
@@ -252,17 +333,20 @@ Index.propTypes = {
   /** type:number max width of navbar content in pixels */
   maxWidth: proptypes.number,
   /** type:string background color of navbar while page is parked */
-  backgroundColorPrimary: proptypes.string,
+  backgroundColorDocked: proptypes.string,
   /** type:string background color of navbar whil page is scrolled */
-  backgroundColorSecondary: proptypes.string,
+  backgroundColorActive: proptypes.string,
   /** type:bool activate drop shadow effect */
   dropShadow: proptypes.bool,
   /** type:string brand icon transform:scale on scroll ('none', def:'low', 'high') */
   brandScale: proptypes.string,
   /** type:string brand icon link URL */
   brandLink: proptypes.string,
-  /** type:bool display drop shadow on scroll */
-  dropShadow: proptypes.bool,
+  /** type:object styles object containing user defined text styles for nav links while at top of page */
+  textStylesDocked: proptypes.object,
+  /** type:object styles object containing user defined text styles for nav links while page is scrolled*/
+
+  textStylesActive: proptypes.object,
 }
 
 function processBrandImage(brandImage) {
@@ -271,6 +355,5 @@ function processBrandImage(brandImage) {
     id: "sticky-navbar-brand-image",
     width: 60,
   })
-  console.log(img)
   return img
 }

@@ -19,9 +19,21 @@ function App() {
         {
           text: 'Contact',
           id:"contact"
+        },
+        {
+          text:'Home2',
+          id: 'home2'
+        },
+        {
+          text: 'About2',
+          id:"about2"
+        },
+        {
+          text: 'Contact2',
+          id:"contact2"
         }
 
-      ]} brandIcon={brand} backgroundColorSecondary={'blue'}></Navbar>
+      ]} brandIcon={brand} backgroundColorActive={'white'} ></Navbar>
         <img src={logo} className="App-logo" alt="logo" />
         <div id="home" style={{
           height: '100vh',
@@ -38,6 +50,27 @@ function App() {
           about
         </div>
         <div id="contact" style={{
+          height: '100vh',
+          width: '100%',
+          background: 'blue'
+        }}>
+          contact
+        </div>
+        <div id="home2" style={{
+          height: '100vh',
+          width: '100%',
+          background: 'yellow'
+        }}>
+          home
+        </div>
+        <div id="about2" style={{
+          height: '100vh',
+          width: '100%',
+          background: 'red'
+        }}>
+          about
+        </div>
+        <div id="contact2" style={{
           height: '100vh',
           width: '100%',
           background: 'blue'

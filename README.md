@@ -21,6 +21,14 @@ export default function MyApp(props){
     )
 }
 ```
+## When using the smart-location links, format your location object as such
+```js
+<ReactStickyNavbar locations={{
+
+}} />
+```
+The first entry in your locations array should be your 'Home' link.  No matter what ID you enter for this array index, the component will ensure the page navigates back to the 0 position of the page.
+
 
 # Dependencies
 - proptypes
