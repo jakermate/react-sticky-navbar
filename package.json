@@ -7,9 +7,6 @@
     "dist"
   ],
   "private": false,
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "repository": {
     "type": "github",
     "directory": "https://github.com/jakermate/react-sticky-navbar"
