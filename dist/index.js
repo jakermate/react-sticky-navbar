@@ -15,14 +15,26 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _throttle = _interopRequireDefault(require("lodash/throttle"));
 
+var _core = require("@babel/core");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n  padding: 1rem;\n  background: none;\n  border: none;\n  cursor: pointer;\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: sticky;\n  top: 0;\n  left: 0;\n  right: 0;\n  min-height: 50px;\n  padding: 20px 0px;\n  transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n  &.active {\n    background: ", " !important;\n    padding: 10px 0;\n  }\n  #react-sticky-navbar-brand-container {\n    transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n  }\n  &.active #react-sticky-navbar-brand-container {\n    transform: scale(1.4)\n  }\n  \n"]);
+  var data = _taggedTemplateLiteral(["\n  position: sticky;\n  top: 0;\n  left: 0;\n  right: 0;\n  min-height: 50px;\n  padding: 20px 0px;\n  transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n\n  /* active styling */\n  &.active {\n    background: ", " !important;\n    padding: 10px 0;\n    /* drop shadow */\n    box-shadow: ", ";\n  }\n  /* brand image active styling */\n  #react-sticky-navbar-brand-container {\n    transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n  }\n  &.active #react-sticky-navbar-brand-container {\n    transform: scale(1.4);\n  }\n  /* nav links active styling */\n  .sticky-navbar-location-nav-button {\n  }\n  &.active .sticky-navbar-location-nav-button {\n    color: ", ";\n  }\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -32,6 +44,12 @@ function _templateObject() {
 }
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -46,20 +64,24 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function Index(props) {
+  var _ref;
+
   var log = console.log; // setup defaults if none provided
 
   var params = {
-    locations: (props === null || props === void 0 ? void 0 : props.locations) || [],
+    locations: (props === null || props === void 0 ? void 0 : props.locations) || null,
     brandIcon: processBrandImage(props === null || props === void 0 ? void 0 : props.brandIcon),
     // image element
     maxWidth: (props === null || props === void 0 ? void 0 : props.maxWidth) || 1024,
-    backgroundColorPrimary: (props === null || props === void 0 ? void 0 : props.backgroundColorPrimary) || "white",
-    backgroundColorSecondary: (props === null || props === void 0 ? void 0 : props.backgroundColorSecondary) || "black",
+    backgroundColorDocked: (props === null || props === void 0 ? void 0 : props.backgroundColorDocked) || "white",
+    backgroundColorActive: (props === null || props === void 0 ? void 0 : props.backgroundColorActive) || "black",
     dropShadow: (props === null || props === void 0 ? void 0 : props.dropShadow) || true,
-    brandLink: (props === null || props === void 0 ? void 0 : props.brandLink) || '/'
+    brandLink: (props === null || props === void 0 ? void 0 : props.brandLink) || "/",
+    textStylesActive: (props === null || props === void 0 ? void 0 : props.textStylesActive) || {},
+    textStylesDocked: (props === null || props === void 0 ? void 0 : props.textStylesDocked) || {}
   }; // location tracking
 
-  var _useState = (0, _react.useState)("/"),
+  var _useState = (0, _react.useState)(0),
       _useState2 = _slicedToArray(_useState, 2),
       active = _useState2[0],
       setActive = _useState2[1];
@@ -69,13 +91,20 @@ function Index(props) {
       map = _useState4[0],
       setMap = _useState4[1];
 
+  var mapRef = (0, _react.useRef)(map);
+  mapRef.current = map;
+
   var _useState5 = (0, _react.useState)(0),
       _useState6 = _slicedToArray(_useState5, 2),
       windowHeight = _useState6[0],
-      setWindowHeight = _useState6[1]; // setup listeners
+      setWindowHeight = _useState6[1];
 
+  var windowHeightRef = (0, _react.useRef)(windowHeight);
+  windowHeightRef.current = windowHeight; // setup listeners
 
   (0, _react.useEffect)(function () {
+    // set scroll behavior to smooth
+    document.documentElement.style.scrollBehavior = "smooth";
     document.addEventListener("scroll", (0, _throttle.default)(onscroll, 50));
     document.addEventListener("resize", resizeWindow);
     setMap(generateMap(params.locations));
@@ -85,12 +114,39 @@ function Index(props) {
   function onscroll() {
     // console.log("Scroll call")
     var position = getScrollLocation();
-    log(position);
-    determineIfActive(position);
+    log(position); // determine if scroll styling is active
+
+    determineIfScrolled(position); // determine what section is being seen
+
+    if (Object.keys(mapRef.current).length === 0) {
+      // log(map)
+      return; // return if map is default empty object
+    }
+
+    log(mapRef.current);
+    var activePath = getActiveLocation();
+    setActive(function (oldState) {
+      return activePath;
+    });
   }
 
   function getScrollLocation() {
     return window.scrollY;
+  }
+
+  function getActiveLocation() {
+    var active = 0;
+    console.log('getting active location');
+    mapRef.current.forEach(function (mapObj, index) {
+      // console.log(mapObj)
+      if (window.scrollY + windowHeightRef.current / 2 > mapObj.location) {
+        active = index; // console.log('can see '+path)
+      }
+
+      return;
+    }); // this returns last matching path of visible element
+
+    return active;
   }
 
   function resizeWindow() {
@@ -105,7 +161,7 @@ function Index(props) {
 
   var headerRef = (0, _react.useRef)();
 
-  function determineIfActive() {
+  function determineIfScrolled() {
     if (window.scrollY > 10) {
       headerRef.current.classList.add("active");
       return;
@@ -137,20 +193,113 @@ function Index(props) {
     locationArray.forEach(function (pathObj, index) {
       var newObj = {
         id: pathObj.id,
+        text: pathObj.text,
         location: getLocationPixels(pathObj.id)
       };
+      console.log(newObj);
       map.push(newObj);
     });
     return map;
 
-    function getLocationPixels(path) {
-      var el = document.getElementById(path);
-      return el.getBoundingClientRect().top + document.body.scrollTop;
+    function getLocationPixels(idString) {
+      var el = document.getElementById(idString);
+      return el.getBoundingClientRect().top + window.scrollY;
     }
-  } // render
+  } // navigate on button press
+
+
+  function handleNavigation(e, idString) {
+    e.preventDefault();
+    log("Navigating to ID: " + idString); // first, refresh location map
+
+    setMap(generateMap(params.locations));
+    var index = map.map(function (f) {
+      return f.id;
+    }).indexOf(idString); // if home index selected
+
+    if (index === 0) {
+      window.scrollTo(0, 0);
+      return;
+    } // if non-home index selected
+
+
+    window.scrollTo(0, parseInt(map[index].location) - windowHeight / 3);
+  }
+
+  var _useState7 = (0, _react.useState)(10),
+      _useState8 = _slicedToArray(_useState7, 2),
+      indicatorWidth = _useState8[0],
+      setIndicatorWidth = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(10),
+      _useState10 = _slicedToArray(_useState9, 2),
+      indicatorOffset = _useState10[0],
+      setIndicatorOffset = _useState10[1]; // callback for when active section changes
+
+
+  (0, _react.useEffect)(function () {
+    // do calculations for indicator size and position
+    console.log('new active: ' + active);
+    var leftOffset = document.getElementById("".concat(params.locations[active].id, "-link")).offsetLeft;
+    var width = document.getElementById("".concat(params.locations[active].id, "-link")).offsetWidth;
+    console.log('width: ' + width);
+    console.log('offset: ' + leftOffset);
+    setIndicatorWidth(width);
+    setIndicatorOffset(leftOffset);
+  }, [active]);
+
+  var indicatorComponent = /*#__PURE__*/_react.default.createElement("div", {
+    style: (_ref = {
+      transition: "all .4s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+      borderRadius: "5px",
+      position: 'absolute',
+      bottom: 0,
+      background: "white",
+      height: '2px'
+    }, _defineProperty(_ref, "background", "black"), _defineProperty(_ref, "width", "".concat(indicatorWidth / 4, "px")), _defineProperty(_ref, "transform", "translateX(".concat(indicatorOffset + (indicatorWidth / 4 + indicatorWidth / 8), "px")), _ref)
+  }); //   navigator component
+
+
+  var navComponent = /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      position: 'relative'
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    id: "sticky-navbar-nav-links",
+    style: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      alignItems: "center"
+    }
+  }, params.locations.map(function (locationObj, index) {
+    return /*#__PURE__*/_react.default.createElement(NavButton, {
+      key: "sticky-navbar-link-key-".concat(index),
+      className: "sticky-navbar-location-nav-button",
+      id: "".concat(locationObj.id, "-link"),
+      style: _objectSpread(_objectSpread({}, params.textStyleDocked), {}, {
+        fontSize: "1rem"
+      }),
+      onClick: function onClick(e) {
+        handleNavigation(e, locationObj.id);
+      }
+    }, /*#__PURE__*/_react.default.createElement("div", {
+      className: "sticky-navbar-location-text"
+    }, locationObj.text));
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    id: "sticky-navbar-nav-indicator",
+    style: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: '2px'
+    }
+  }, indicatorComponent)); // render
 
 
   return /*#__PURE__*/_react.default.createElement(Header, {
+    id: "react-sticky-navbar",
     ref: headerRef,
     className: "",
     style: {
@@ -159,9 +308,14 @@ function Index(props) {
       left: 0,
       right: 0,
       width: "100%",
-      background: params.backgroundColorPrimary
-    },
-    secondary: params.backgroundColorSecondary
+      background: params.backgroundColorDocked
+    } // paramter drops
+    ,
+    secondary: params.backgroundColorActive,
+    dropShadow: params.dropShadow,
+    textStylesActive: _objectSpread(_objectSpread({}, params.textStyleActive), {}, {
+      color: "white"
+    })
   }, /*#__PURE__*/_react.default.createElement("div", {
     id: "sticky-navbar-content-wrapper",
     style: {
@@ -173,29 +327,35 @@ function Index(props) {
       alignItems: "center"
     }
   }, /*#__PURE__*/_react.default.createElement("a", {
-    href: params.brandLink || '/'
+    href: params.brandLink || "/"
   }, /*#__PURE__*/_react.default.createElement("div", {
     id: "react-sticky-navbar-brand-container",
     style: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center'
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
     }
-  }, params.brandIcon), /*#__PURE__*/_react.default.createElement("div", {
+  }, params.brandIcon)), /*#__PURE__*/_react.default.createElement("div", {
     id: "react-sticky-navbar-links-container"
-  }))));
+  }, params.locations && navComponent)));
 }
 
 var Header = _styledComponents.default.header(_templateObject(), function (props) {
   return props.secondary;
+}, function (props) {
+  return props.dropShadow ? "0 4px 8px rgba(0,0,0,.3)" : "none";
+}, function (props) {
+  return props.textStylesActive.color;
 });
+
+var NavButton = _styledComponents.default.button(_templateObject2());
 
 Index.propTypes = {
   /** type:[object] - object array of element ID to include in navigation section
    * {
-   *     path: string,
-   *     image: string
+   *     id: string,
+   *     text: string
    * }
    */
   locations: _propTypes.default.object,
@@ -207,10 +367,10 @@ Index.propTypes = {
   maxWidth: _propTypes.default.number,
 
   /** type:string background color of navbar while page is parked */
-  backgroundColorPrimary: _propTypes.default.string,
+  backgroundColorDocked: _propTypes.default.string,
 
   /** type:string background color of navbar whil page is scrolled */
-  backgroundColorSecondary: _propTypes.default.string,
+  backgroundColorActive: _propTypes.default.string,
 
   /** type:bool activate drop shadow effect */
   dropShadow: _propTypes.default.bool,
@@ -219,7 +379,13 @@ Index.propTypes = {
   brandScale: _propTypes.default.string,
 
   /** type:string brand icon link URL */
-  brandLink: _propTypes.default.string
+  brandLink: _propTypes.default.string,
+
+  /** type:object styles object containing user defined text styles for nav links while at top of page */
+  textStylesDocked: _propTypes.default.object,
+
+  /** type:object styles object containing user defined text styles for nav links while page is scrolled*/
+  textStylesActive: _propTypes.default.object
 };
 
 function processBrandImage(brandImage) {
@@ -229,6 +395,5 @@ function processBrandImage(brandImage) {
     width: 60
   });
 
-  console.log(img);
   return img;
 }
